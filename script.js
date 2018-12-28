@@ -1,81 +1,56 @@
-var circles = [];
+const circles = [];
 
-var animationStepFunctions = [];
-var animationStepArgs = [];
+const animation = new AnimationA();
+drawCircles();
+drawIntersections();
 
 function drawCircles() {
     for(let i=0; i<30; i++) {
         let circle = new Circle(randomTo(canvas.width),randomTo(canvas.height));
         circles.push(circle);
-        animationStepFunctions.push(drawCircle);
-        animationStepArgs.push([circle]);
+        animation.addAnimationStep(drawCircle, circle);
     }
 }
 
 function drawIntersections() {
     for(let circle of circles) {
-        animationStepFunctions.push(drawCircle);
-        animationStepArgs.push([circle, COLOR_BLUE]);
+        animation.addAnimationStep(drawCircle, circle, COLOR_BLUE);
 
         for(let circle2 of circles) {
             if(circle2 !== circle) {
-                animationStepFunctions.push(drawCircle);
                 let intersectionPoints = getIntersectionPoints(circle, circle2);
+
                 if (intersectionPoints[0] && intersectionPoints[1]){
-                    animationStepArgs.push([circle2, COLOR_GREEN]);
+                    animation.addAnimationStep(drawCircle, circle2, COLOR_GREEN);
                 }
                 else {
-                    animationStepArgs.push([circle2, COLOR_RED]);
+                    animation.addAnimationStep(drawCircle, circle2, COLOR_RED);
                 }
             }
         }
 
-        animationStepFunctions.push(resetCanvasWithCircles);
-        animationStepArgs.push([circles]);
+        animation.addAnimationStep(resetCanvasWithCircles, circles);
     }
 }
 
-
-
-drawCircles();
-drawIntersections();
-
-let step = 0;
-let animation = null;
-
 function startAnimation() {
-    animation = setInterval(() => {
-        nextStep();
-    }, 500);
+    animation.startAnimation();
 }
 
 function nextStep() {
-    if(step < animationStepFunctions.length) {
-        animationStepFunctions[step](...animationStepArgs[step]);
-        step++;
-    }
+    animation.nextStep();
 }
 
 function backStep() {
-    if(step>0) {
-        let newStep = step - 1;
-
-        resetCanvasWithCircles([]);
-        step=0;
-        for(let i=0; i<newStep; i++) {
-            nextStep();
-        }
-    }
+    animation.backStep();
 }
 
 function stopAnimation() {
-    clearInterval(animation);
+    animation.stopAnimation();
 }
 
 function skipAnimation() {
-    while(step < animationStepFunctions.length) {
-        nextStep()
-    }
+    animation.skipAnimation();
 }
 
 

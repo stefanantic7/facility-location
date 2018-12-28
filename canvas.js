@@ -10,19 +10,14 @@ function drawCircle(circle, color = COLOR_BLACK) {
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.fillRect(circle.x, circle.y, 1, 1);
-    ctx.arc(circle.x, circle.y, radius, 0, 2 * Math.PI);
+    ctx.arc(circle.x, circle.y, RADIUS, 0, 2 * Math.PI);
     ctx.stroke();
 }
 
-function resetCanvasWithCircles(circles) {
+function resetCanvasWithCircles(circles = []) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for(let circle of circles) {
         drawCircle(circle);
     }
-}
-
-
-class Animation {
-
 }
