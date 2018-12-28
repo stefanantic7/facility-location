@@ -21,3 +21,8 @@ function resetCanvasWithCircles(circles) {
         drawCircle(circle);
     }
 }
+
+
+class Animation {
+
+}

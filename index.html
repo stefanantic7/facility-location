@@ -3,14 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Circles</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
 </head>
 <body>
 
-<canvas id="canvas-section" width="1000" height="500"
-        style="border:1px solid #c3c3c3;">
-    Your browser does not support the canvas element.
-</canvas>
+<div class="mt-2 container-fluid">
+    <canvas id="canvas-section" width="1000" height="500"
+            style="border:1px solid #c3c3c3;">
+        Your browser does not support the canvas element.
+    </canvas>
+    <div class="mb-2">
+        <button type="button" class="btn btn-warning" onclick="backStep()">Back</button>
+        <button type="button" class="btn btn-success" onclick="nextStep()">Next</button>
+    </div>
+    <div>
+        <button type="button" class="btn btn-primary" onclick="startAnimation()">Start animation</button>
+        <button type="button" class="btn btn-danger" onclick="stopAnimation()">Stop animation</button>
+        <button type="button" class="btn btn-secondary" onclick="skipAnimation()">Skip animation</button>
+    </div>
+</div>
 
+<script src="jquery-3.3.1.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>-->
+<script src="bootstrap/js/bootstrap.min.js"></script>
 <script src="math-helpers.js"></script>
 <script src="models.js"></script>
 <script src="canvas.js"></script>

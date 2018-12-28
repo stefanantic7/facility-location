@@ -31,3 +31,14 @@ function getIntersectionPoints(circle1, circle2) {
 
     return [p1, p2];
 }
+
+function getAngleRelativeToX(x1, y1, x2, y2) {
+    let angle = -Math.atan2(y1 - y2, x2 - x1) * 180 / Math.PI;
+
+    if(angle > 0) {
+        angle = angle-360;
+    }
+
+    return Math.abs(angle);
+}
+
