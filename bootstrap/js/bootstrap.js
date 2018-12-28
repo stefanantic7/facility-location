@@ -2803,7 +2803,7 @@
         this.element.setAttribute('aria-describedby', tipId);
         this.setContent();
 
-        if (this.config.animation) {
+        if (this.config._animation) {
           $(tip).addClass(ClassName$6.FADE);
         }
 
@@ -2857,7 +2857,7 @@
         }
 
         var complete = function complete() {
-          if (_this.config.animation) {
+          if (_this.config._animation) {
             _this._fixTransition();
           }
 
@@ -3177,17 +3177,17 @@
 
     _proto._fixTransition = function _fixTransition() {
       var tip = this.getTipElement();
-      var initConfigAnimation = this.config.animation;
+      var initConfigAnimation = this.config._animation;
 
       if (tip.getAttribute('x-placement') !== null) {
         return;
       }
 
       $(tip).removeClass(ClassName$6.FADE);
-      this.config.animation = false;
+      this.config._animation = false;
       this.hide();
       this.show();
-      this.config.animation = initConfigAnimation;
+      this.config._animation = initConfigAnimation;
     }; // Static
 
 
@@ -4060,7 +4060,7 @@
 
       $(this._element).trigger(Event$a.SHOW);
 
-      if (this._config.animation) {
+      if (this._config._animation) {
         this._element.classList.add(ClassName$a.FADE);
       }
 
@@ -4080,7 +4080,7 @@
 
       this._element.classList.add(ClassName$a.SHOWING);
 
-      if (this._config.animation) {
+      if (this._config._animation) {
         var transitionDuration = Util.getTransitionDurationFromElement(this._element);
         $(this._element).one(Util.TRANSITION_END, complete).emulateTransitionEnd(transitionDuration);
       } else {
@@ -4146,7 +4146,7 @@
 
       this._element.classList.remove(ClassName$a.SHOW);
 
-      if (this._config.animation) {
+      if (this._config._animation) {
         var transitionDuration = Util.getTransitionDurationFromElement(this._element);
         $(this._element).one(Util.TRANSITION_END, complete).emulateTransitionEnd(transitionDuration);
       } else {

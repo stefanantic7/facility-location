@@ -24,38 +24,38 @@ class Interval {
 class AnimationA {
 
     constructor() {
-        this.step = 0;
-        this.animation = null;
-        this.animationStepFunctions = [];
-        this.animationStepArgs = [];
+        this._step = 0;
+        this._animation = null;
+        this._animationStepFunctions = [];
+        this._animationStepArgs = [];
 
     }
 
     addAnimationStep(animationFunction, ...functionArguments) {
-        this.animationStepFunctions.push(animationFunction);
-        this.animationStepArgs.push(functionArguments);
+        this._animationStepFunctions.push(animationFunction);
+        this._animationStepArgs.push(functionArguments);
     }
 
     startAnimation() {
         this.stopAnimation();
-        this.animation = setInterval(() => {
+        this._animation = setInterval(() => {
             this.nextStep();
         }, 500);
     }
 
     nextStep() {
-        if(this.step < this.animationStepFunctions.length) {
-            this.animationStepFunctions[this.step](...this.animationStepArgs[this.step]);
-            this.step++;
+        if(this._step < this._animationStepFunctions.length) {
+            this._animationStepFunctions[this._step](...this._animationStepArgs[this._step]);
+            this._step++;
         }
     }
 
     backStep() {
-        if(this.step>0) {
-            let newStep = this.step - 1;
+        if(this._step>0) {
+            let newStep = this._step - 1;
 
             resetCanvasWithCircles([]);
-            this.step=0;
+            this._step=0;
             for(let i=0; i<newStep; i++) {
                 this.nextStep();
             }
@@ -63,11 +63,11 @@ class AnimationA {
     }
 
     stopAnimation() {
-        clearInterval(this.animation);
+        clearInterval(this._animation);
     }
 
     skipAnimation() {
-        while(this.step < this.animationStepFunctions.length) {
+        while(this._step < this._animationStepFunctions.length) {
             this.nextStep()
         }
     }
