@@ -1,37 +1,12 @@
 const circles = [];
+const newCircles = [];
+
+for(let i=0; i<10; i++) {
+    let circle = new Circle(randomTo(canvas.width),randomTo(canvas.height));
+    circles.push(circle);
+}
 
 const animation = new AnimationA();
-drawCircles();
-drawIntersections();
-
-function drawCircles() {
-    for(let i=0; i<10; i++) {
-        let circle = new Circle(randomTo(canvas.width),randomTo(canvas.height));
-        circles.push(circle);
-        animation.addAnimationStep(drawCircle, circle);
-    }
-}
-
-function drawIntersections() {
-    for(let circle of circles) {
-        animation.addAnimationStep(drawCircle, circle, COLOR_BLUE);
-
-        for(let circle2 of circles) {
-            if(circle2 !== circle) {
-                let intersectionPoints = getIntersectionPoints(circle, circle2);
-
-                if (intersectionPoints[0] && intersectionPoints[1]){
-                    animation.addAnimationStep(drawCircle, circle2, COLOR_GREEN);
-                }
-                else {
-                    animation.addAnimationStep(drawCircle, circle2, COLOR_RED);
-                }
-            }
-        }
-
-        animation.addAnimationStep(resetCanvasWithCircles, circles);
-    }
-}
 
 function startAnimation() {
     animation.startAnimation();
@@ -58,6 +33,7 @@ let maxIntersections = 0;
 let maxIntersectionPoint = null;
 let intervals = [];
 for(let circle of circles) {
+    let intersectionPoint = null;
     intervals = [];
     for(let circle2 of circles) {
 
@@ -132,22 +108,73 @@ for(let circle of circles) {
                 j++;
             }
         }
+
+        intersectionPoint = {
+            x: circle.x + circle.r * Math.cos(intersectionAngle * Math.PI / 180),
+            y: circle.y - circle.r * Math.sin(intersectionAngle * Math.PI / 180)
+        };
+
         console.log(maxIntersectionsCounter);
         console.log('----');
         if(maxIntersectionsCounter>maxIntersections) {
             maxIntersections = maxIntersectionsCounter;
 
-            maxIntersectionPoint = {
-                x: circle.x + circle.r * Math.cos(intersectionAngle * Math.PI / 180),
-                y: circle.y - circle.r * Math.sin(intersectionAngle * Math.PI / 180)
-            };
+            maxIntersectionPoint = intersectionPoint;
         }
 
     }
-    //Maybe I can save all maxIntersectionPoint for all circles (for animation)
 
+    if(intersectionPoint) {
+        newCircles.push(new Circle(intersectionPoint.x, intersectionPoint.y));
+    }
+    else {
+        newCircles.push(new Circle(circle.x, circle.y));
+    }
 }
 
-// drawCircle(new Circle(maxIntersectionPoint.x, maxIntersectionPoint.y), 'cyan');
 
 
+
+
+
+
+
+
+
+drawCircles();
+drawIntersections();
+drawFinalCircle();
+
+function drawCircles() {
+    for(let circle of circles) {
+        animation.addAnimationStep(drawCircle, circle);
+    }
+}
+
+function drawIntersections() {
+    let i = 0;
+    for(let circle of circles) {
+        animation.addAnimationStep(drawCircle, circle, COLOR_BLUE);
+
+        for(let circle2 of circles) {
+            if(circle2 !== circle) {
+                let intersectionPoints = getIntersectionPoints(circle, circle2);
+
+                if (intersectionPoints[0] && intersectionPoints[1]){
+                    animation.addAnimationStep(drawCircle, circle2, COLOR_GREEN);
+                }
+                else {
+                    animation.addAnimationStep(drawCircle, circle2, COLOR_RED);
+                }
+            }
+        }
+
+        animation.addAnimationStep(drawCircle, newCircles[i], 'cyan');
+        animation.addAnimationStep(resetCanvasWithCircles, circles);
+        i++;
+    }
+}
+
+function drawFinalCircle() {
+    animation.addAnimationStep(drawCircle, new Circle(maxIntersectionPoint.x, maxIntersectionPoint.y), 'cyan');
+}
