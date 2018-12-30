@@ -7,11 +7,14 @@
 </head>
 <body>
 
-<div class="mt-2 container-fluid">
-    <canvas id="canvas-section" width="300" height="300"
-            style="border:1px solid #c3c3c3;">
-        Your browser does not support the canvas element.
-    </canvas>
+<div class="mt-2 container-fluid" style="height: 100vh;">
+    <div style="height: calc(100% - 7em);">
+        <canvas id="canvas-section" style="border:1px solid #c3c3c3;
+        display: block;
+    ">
+            Your browser does not support the canvas element.
+        </canvas>
+    </div>
     <div class="mb-2">
         <button type="button" class="btn btn-warning" onclick="backStep()">Back</button>
         <button type="button" class="btn btn-success" onclick="nextStep()">Next</button>
