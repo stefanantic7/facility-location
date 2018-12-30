@@ -1,12 +1,56 @@
-const circles = [];
-const newCircles = [];
 const animation = new AnimationA();
+let circle = [];
 
-for(let i=0; i<10; i++) {
-    let circle = new Circle(randomTo(canvas.width),randomTo(canvas.height));
-    circles.push(circle);
+function randomPoints() {
+    let pointsCount = prompt("How many points you want?", "10");
+
+    if (pointsCount != null && pointsCount !== "") {
+        resetCanvasWithCircles([]);
+        let circles = [];
+        for(let i=0; i<pointsCount; i++) {
+            let circle = new Circle(randomTo(canvas.width),randomTo(canvas.height));
+            circles.push(circle);
+        }
+
+        start(circles);
+    }
 }
 
+function loadCoordinatesFromFile() {
+    let fileInput = document.getElementById('coordinate-file');
+    if(fileInput.files[0]) {
+        const f = fileInput.files[0];
+        const reader = new FileReader();
+
+        // Closure to capture the file information.
+        reader.onload = (function(theFile) {
+            return function(e) {
+                resetCanvasWithCircles([]);
+                let circles = JSON.parse(e.target.result);
+                start(circles);
+            };
+        })(f);
+
+        // Read in the image file as a data URL.
+        reader.readAsText(f);
+    }
+}
+
+function loadFromSelectedPoints() {
+    resetCanvasWithCircles([]);
+    let circles = [];
+    for(let i=0; i<drownPoints.length; i++) {
+        let circle = new Circle(drownPoints[i].x, drownPoints[i].y);
+        circles.push(circle);
+    }
+
+    start(circles);
+}
+
+function clearCircles() {
+    resetCanvasWithCircles([]);
+    drownPoints = [];
+}
 
 function startAnimation() {
     animation.startAnimation();
@@ -28,126 +72,21 @@ function skipAnimation() {
     animation.skipAnimation();
 }
 
-
-let maxIntersections = 0;
-let maxIntersectionPoint = null;
-for(let circle of circles) {
-    let intersectionPoint = null;
-
-    let intervals = getIntersectionsIntervals(circle, circles);
-
-    intervals.sort(function (first, second) {
-        if (first.start !== second.start) {
-            return first.start - second.start;
-        }
-        return first.end - second.end;
-    });
-
-    let intersectionsCounter = 0;
-    if(intervals.length > 0) {
-        let maxIntersectionsCounter = 0;
-        let intersectionAngle = 0;
-
-        let j = 0;
-        for(let i=0; i<intervals.length && j<intervals.length; i++) {
-            if (intervals[i].start <= intervals[j].end) {
-                intersectionsCounter++;
-                if (intersectionsCounter > maxIntersectionsCounter) {
-                    maxIntersectionsCounter = intersectionsCounter;
-                    intersectionAngle = intervals[i].start; //start or end
-                }
-            } else {
-                intersectionsCounter--;
-                j++;
-            }
-        }
-
-        intersectionPoint = {
-            x: circle.x + circle.r * Math.cos(intersectionAngle * Math.PI / 180),
-            y: circle.y - circle.r * Math.sin(intersectionAngle * Math.PI / 180)
-        };
-
-        console.log(maxIntersectionsCounter);
-        console.log('----');
-
-        //Store global point with max intersections
-        if(maxIntersectionsCounter>maxIntersections) {
-            maxIntersections = maxIntersectionsCounter;
-
-            maxIntersectionPoint = intersectionPoint;
-        }
-
-    }
-
-    if(intersectionPoint) {
-        newCircles.push(new Circle(intersectionPoint.x, intersectionPoint.y));
-    }
-    else {
-        newCircles.push(new Circle(circle.x, circle.y));
-    }
+function skipBackAnimation() {
+    animation.skipBackAnimation();
 }
 
-function getIntersectionsIntervals(circle, circles) {
-    let intervals = [];
-    for(let circle2 of circles) {
-
-        if(circle2 !== circle) {
-            let intersectionPoints = getIntersectionPoints(circle, circle2);
-            if (intersectionPoints[0] && intersectionPoints[1]){
-                let pointA = intersectionPoints[0];
-                let pointB = intersectionPoints[1];
-
-                let angleA = getAngleRelativeToX(circle.x, circle.y, pointA.x, pointA.y);
-                let angleB = getAngleRelativeToX(circle.x, circle.y, pointB.x, pointB.y);
-
-                let angleMax = Math.max(angleA, angleB);
-                let angleMin = Math.min(angleA, angleB);
-
-                // Set interval from angleA to angleB
-                if(angleMax - angleMin > 180) {
-                    angleA = angleMax;
-                    angleB = angleMin;
-                }
-                else {
-                    angleA = angleMin;
-                    angleB = angleMax;
-                }
-
-                if(angleA > angleB) { //Should split interval
-                    intervals.push(new Interval(0, angleB));
-                    intervals.push(new Interval(angleA, 360));
-                }
-                else {
-                    intervals.push(new Interval(angleA, angleB));
-                }
-
-            }
-        }
-    }
-
-    return intervals;
+function saveCoordinates() {
+    download(JSON.stringify(circles), 'circles.txt', 'txt');
 }
 
-
-
-
-
-
-
-
-
-
-animateCircles();
-animateIntersections();
-animateFinalCircle();
-
-function animateCircles() {
+function animateCircles(circles) {
     for(let circle of circles) {
         animation.addAnimationStep(drawCircle, circle);
     }
 }
 
-function animateIntersections() {
+function animateIntersections(circles, newCircles) {
     let i = 0;
     for(let circle of circles) {
         animation.addAnimationStep(drawCircle, circle, COLOR_BLUE);
@@ -165,17 +104,84 @@ function animateIntersections() {
             }
         }
 
-        animation.addAnimationStep(drawCircle, newCircles[i], 'cyan');
+        animation.addAnimationStep(drawCircle, newCircles[i], COLOR_PINK);
         animation.addAnimationStep(resetCanvasWithCircles, circles);
         i++;
     }
 }
 
-function animateFinalCircle() {
-    if(maxIntersectionPoint) {
-        animation.addAnimationStep(drawCircle, new Circle(maxIntersectionPoint.x, maxIntersectionPoint.y), 'cyan');
+function animateFinalCircle(maxIntersectionPoint) {
+    animation.addAnimationStep(drawCircle, new Circle(maxIntersectionPoint.x, maxIntersectionPoint.y), COLOR_PURPLE);
+}
+
+function start(circles) {
+    this.circles = circles;
+    animation.restart();
+
+    let newCircles = [];
+    let maxIntersections = 0;
+    let maxIntersectionPoint = null;
+    for(let circle of circles) {
+        let intersectionPoint = null;
+
+        let intervals = getIntersectionsIntervals(circle, circles);
+
+        intervals.sort(function (first, second) {
+            if (first.start !== second.start) {
+                return first.start - second.start;
+            }
+            return first.end - second.end;
+        });
+
+        let intersectionsCounter = 0;
+        if(intervals.length > 0) {
+            let maxIntersectionsCounter = 0;
+            let intersectionAngle = 0;
+
+            let j = 0;
+            for(let i=0; i<intervals.length && j<intervals.length; i++) {
+                if (intervals[i].start <= intervals[j].end) {
+                    intersectionsCounter++;
+                    if (intersectionsCounter > maxIntersectionsCounter) {
+                        maxIntersectionsCounter = intersectionsCounter;
+                        intersectionAngle = intervals[i].start; //start or end
+                    }
+                } else {
+                    intersectionsCounter--;
+                    j++;
+                }
+            }
+
+            intersectionPoint = {
+                x: circle.x + circle.r * Math.cos(intersectionAngle * Math.PI / 180),
+                y: circle.y - circle.r * Math.sin(intersectionAngle * Math.PI / 180)
+            };
+
+            console.log(maxIntersectionsCounter);
+            console.log('----');
+
+            //Store global point with max intersections
+            if(maxIntersectionsCounter>maxIntersections) {
+                maxIntersections = maxIntersectionsCounter;
+
+                maxIntersectionPoint = intersectionPoint;
+            }
+
+        }
+
+        if(intersectionPoint) {
+            newCircles.push(new Circle(intersectionPoint.x, intersectionPoint.y));
+        }
+        else {
+            newCircles.push(new Circle(circle.x, circle.y));
+        }
     }
-    else {
-        animation.addAnimationStep(drawCircle, new Circle(circles[0].x, circles[0].y), 'cyan');
+
+    if(!maxIntersectionPoint) {
+        maxIntersectionPoint={x: circles[0].x, y: circles[0].y};
     }
+
+    animateCircles(circles);
+    animateIntersections(circles, newCircles);
+    animateFinalCircle(maxIntersectionPoint);
 }

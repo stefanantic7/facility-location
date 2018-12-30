@@ -7,28 +7,38 @@
 </head>
 <body>
 
-<div class="mt-2 container-fluid" style="height: 100vh;">
-    <div style="height: calc(100% - 7em);">
+<div class="mt-2 container-fluid" style="height: 99vh;">
+    <div class="mb-2">
+        <button type="button" class="btn btn-light" onclick="randomPoints()">Random points</button>
+        <button type="button" class="btn btn-light" onclick="loadFromSelectedPoints()">Load from drawn points</button>
+        <input type="file" id="coordinate-file" name="coordinate-file" onchange="loadCoordinatesFromFile()">
+        <button type="button" class="btn btn-link float-right" onclick="clearCircles()">Clear canvas</button>
+        <button type="button" class="btn btn-link float-right" onclick="saveCoordinates()">Save</button>
+
+    </div>
+
+    <div style="height: calc(100% - 11em);">
         <canvas id="canvas-section" style="border:1px solid #c3c3c3;
         display: block;
     ">
             Your browser does not support the canvas element.
         </canvas>
     </div>
-    <div class="mb-2">
-        <button type="button" class="btn btn-warning" onclick="backStep()">Back</button>
-        <button type="button" class="btn btn-success" onclick="nextStep()">Next</button>
-    </div>
-    <div>
+    <div class="">
         <button type="button" class="btn btn-primary" onclick="startAnimation()">Start animation</button>
         <button type="button" class="btn btn-danger" onclick="stopAnimation()">Stop animation</button>
-        <button type="button" class="btn btn-secondary" onclick="skipAnimation()">Skip animation</button>
+        <button type="button" class="btn btn-dark" onclick="skipAnimation()">Skip forward</button>
+        <button type="button" class="btn btn-secondary" onclick="skipBackAnimation()">Restart animation</button>
+
+        <button type="button" class="btn btn-success float-right" onclick="nextStep()">Next</button>
+        <button type="button" class="btn btn-warning float-right mr-1" onclick="backStep()">Back</button>
+
     </div>
 </div>
 
 <script src="jquery-3.3.1.min.js"></script>
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>-->
 <script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="helpers.js"></script>
 <script src="models.js"></script>
 <script src="math-helpers.js"></script>
 <script src="canvas.js"></script>

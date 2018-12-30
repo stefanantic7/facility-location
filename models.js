@@ -39,7 +39,9 @@ class AnimationA {
     startAnimation() {
         this.stopAnimation();
         this._animation = setInterval(() => {
-            this.nextStep();
+            if(!this.nextStep()) {
+                this.stopAnimation();
+            }
         }, 500);
     }
 
@@ -47,7 +49,10 @@ class AnimationA {
         if(this._step < this._animationStepFunctions.length) {
             this._animationStepFunctions[this._step](...this._animationStepArgs[this._step]);
             this._step++;
+            return true;
         }
+
+        return false;
     }
 
     backStep() {
@@ -72,4 +77,14 @@ class AnimationA {
         }
     }
 
+    skipBackAnimation() {
+        resetCanvasWithCircles([]);
+        this._step = 0;
+    }
+
+    restart() {
+        this._step = 0;
+        this._animationStepFunctions = [];
+        this._animationStepArgs = [];
+    }
 }
